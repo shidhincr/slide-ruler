@@ -13,7 +13,7 @@ class sliderRuler {
       lineWidth: 2,
       colorDecimal: '#E4E4E4',
       colorDigit: '#E4E4E4',
-      divide: 10,
+      divide: 50,
       precision: 1,
       fontSize: 20,
       fontColor: '#666',
@@ -37,7 +37,8 @@ class sliderRuler {
   }
 
   _renderBox(container) {
-    const box = document.createElement('div'), canvas = document.createElement('canvas');
+    const box = document.createElement('div'),
+      canvas = document.createElement('canvas');
     this.canvas = canvas;
     box.className = s.box;
     box.appendChild(canvas);
@@ -46,7 +47,8 @@ class sliderRuler {
   }
 
   _renderCanvas() {
-    const {canvasWidth, canvasHeight} = this.options, canvas = this.canvas;
+    const { canvasWidth, canvasHeight } = this.options,
+      canvas = this.canvas;
     canvas.width = canvasWidth * 2;
     canvas.height = canvasHeight * 2;
     canvas.style.width = canvasWidth + 'px';
@@ -71,19 +73,22 @@ class sliderRuler {
       let touch = (e.touches && e.touches[0]) || e;
       this.localState.startX = touch.pageX;
       this.localState.startY = touch.pageY;
-      this.localState.startT = new Date().getTime(); // 记录手指按下的开始时间
-      this.localState.isTouchEnd = false; // 当前开始滑动
+      this.localState.startT = new Date().getTime();
+      this.localState.isTouchEnd = false;
     }
   }
 
   touchMove(e) {
-    if (!this.browserEnv && (e.which !== 1 || e.buttons === 0)) return; // pc canvas超出边界处理
+    if (!this.browserEnv && (e.which !== 1 || e.buttons === 0)) return;
     this.touchPoints(e);
     let touch = (e.touches && e.touches[0]) || e,
       deltaX = touch.pageX - this.localState.startX,
       deltaY = touch.pageY - this.localState.startY;
-    // 如果X方向上的位移大于Y方向，则认为是左右滑动
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(Math.round(deltaX / this.options.divide)) > 0) {
+
+    if (
+      Math.abs(deltaX) > Math.abs(deltaY) &&
+      Math.abs(Math.round(deltaX / this.options.divide)) > 0
+    ) {
       if (this.browserEnv && !this.rebound(deltaX)) {
         return;
       }
@@ -104,24 +109,31 @@ class sliderRuler {
     let touch = (e.touches && e.touches[0]) || e,
       time = new Date().getTime(),
       shift = touch.pageX;
-    this.localState.touchPoints.push({time: time, shift: shift});
+    this.localState.touchPoints.push({ time: time, shift: shift });
   }
 
   inertialShift() {
     let s = 0;
     if (this.localState.touchPoints.length >= 4) {
       let _points = this.localState.touchPoints.slice(-4),
-        v = ((_points[3].shift - _points[0].shift) / (_points[3].time - _points[0].time)) * 1000; // v 手指离开屏幕后的速度px/s
-      const a = 6000; // a 手指离开屏幕后的加速度
-      s = Math.sign(v) * Math.pow(v, 2) / (2 * a); // s 手指离开屏幕后惯性距离
+        v =
+          ((_points[3].shift - _points[0].shift) /
+            (_points[3].time - _points[0].time)) *
+          1000;
+      const a = 6000;
+      s = (Math.sign(v) * Math.pow(v, 2)) / (2 * a);
     }
     return s;
   }
 
   rebound(deltaX) {
-    const {currentValue, maxValue, minValue} = this.options;
-    if ((currentValue === minValue && deltaX > 0) || currentValue === maxValue && deltaX < 0) {
-      let reboundX = Math.sign(deltaX) * 1.5988 * Math.pow(Math.abs(deltaX), 0.7962);
+    const { currentValue, maxValue, minValue } = this.options;
+    if (
+      (currentValue === minValue && deltaX > 0) ||
+      (currentValue === maxValue && deltaX < 0)
+    ) {
+      let reboundX =
+        Math.sign(deltaX) * 1.5988 * Math.pow(Math.abs(deltaX), 0.7962);
       this.canvas.style.transform = `translate3d(${reboundX}px, 0, 0)`;
       return false;
     }
@@ -129,7 +141,7 @@ class sliderRuler {
   }
 
   moveDreaw(shift) {
-    const {divide, precision} = this.options;
+    const { divide, precision } = this.options;
     let moveValue = Math.round(-shift / divide),
       _moveValue = Math.abs(moveValue),
       draw = () => {
@@ -141,7 +153,6 @@ class sliderRuler {
         window.requestAnimationFrame(draw);
         _moveValue--;
       };
-
     draw();
   }
 
@@ -149,47 +160,90 @@ class sliderRuler {
     const canvas = this.canvas,
       context = canvas.getContext('2d');
     canvas.height = canvas.height;
-    let {canvasWidth, canvasHeight, maxValue, minValue, currentValue, handleValue, precision, divide, heightDecimal, heightDigit, lineWidth, colorDecimal, colorDigit, fontSize, fontColor} = this.options;
-    // 计算当前值
-    currentValue = currentValue > minValue ? (currentValue < maxValue ? currentValue : maxValue) : minValue;
-    currentValue = Math.round(currentValue * 10 / precision) * precision / 10;
+    let {
+      canvasWidth,
+      canvasHeight,
+      maxValue,
+      minValue,
+      currentValue,
+      handleValue,
+      precision,
+      divide,
+      heightDecimal,
+      heightDigit,
+      lineWidth,
+      colorDecimal,
+      colorDigit,
+      fontSize,
+      fontColor
+    } = this.options;
+
+    currentValue =
+      currentValue > minValue
+        ? currentValue < maxValue
+          ? currentValue
+          : maxValue
+        : minValue;
+    currentValue =
+      (Math.round((currentValue * 10) / precision) * precision) / 10;
     this.options.currentValue = currentValue;
     handleValue && handleValue(currentValue);
-    let diffCurrentMin = (currentValue - minValue) * divide / precision,
-      startValue = currentValue - Math.floor(canvasWidth / 2 / divide) * precision;
-    startValue = startValue > minValue ? (startValue < maxValue ? startValue : maxValue) : minValue;
-    let endValue = startValue + canvasWidth / divide * precision;
+    let diffCurrentMin = ((currentValue - minValue) * divide) / precision,
+      startValue =
+        currentValue - Math.floor(canvasWidth / 2 / divide) * precision;
+    startValue =
+      startValue > minValue
+        ? startValue < maxValue
+          ? startValue
+          : maxValue
+        : minValue;
+    let endValue = startValue + (canvasWidth / divide) * precision;
     endValue = endValue < maxValue ? endValue : maxValue;
-    // 定义原点
-    let origin = {x: diffCurrentMin > canvasWidth / 2 ? (canvasWidth / 2 - (currentValue - startValue) * divide / precision) * 2 : (canvasWidth / 2 - diffCurrentMin) * 2, y: canvasHeight * 2};
-    // 定义刻度线样式
+
+    let origin = {
+      x:
+        diffCurrentMin > canvasWidth / 2
+          ? (canvasWidth / 2 -
+              ((currentValue - startValue) * divide) / precision) *
+            2
+          : (canvasWidth / 2 - diffCurrentMin) * 2,
+      y: canvasHeight * 2
+    };
+
     heightDecimal = heightDecimal * 2;
     heightDigit = heightDigit * 2;
     lineWidth = lineWidth * 2;
-    // 定义刻度字体样式
     fontSize = fontSize * 2;
-    // 每个刻度所占位的px
     divide = divide * 2;
-    // 定义每个刻度的精度
     const derivative = 1 / precision;
 
-    for (let i = Math.round(startValue / precision * 10) / 10; i <= endValue / precision; i++) {
+    for (
+      let i = Math.round((startValue / precision) * 10) / 10;
+      i <= endValue / precision;
+      i++
+    ) {
       context.beginPath();
-      // 画刻度线
+
       context.moveTo(origin.x + (i - startValue / precision) * divide, 0);
-      // 画线到刻度高度，10的位数就加高
-      context.lineTo(origin.x + (i - startValue / precision) * divide, i % 10 === 0 ? heightDecimal : heightDigit);
+      context.lineTo(
+        origin.x + (i - startValue / precision) * divide,
+        (i/derivative) % 1 === 0 ? heightDecimal : heightDigit
+      );
       context.lineWidth = lineWidth;
-      // 10的位数就加深
-      context.strokeStyle = (i % 10 === 0) ? colorDecimal : colorDigit;
+
+      context.strokeStyle = (i/derivative) % 1 === 0 ? colorDecimal : colorDigit;
       context.stroke();
-      // 描绘刻度值
+
       context.fillStyle = fontColor;
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      if (i % 10 === 0) {
+      if ((i/derivative) % 1 === 0) {
         context.font = `${fontSize}px Arial`;
-        context.fillText(Math.round(i / 10) / (derivative / 10), origin.x + (i - startValue / precision) * divide, heightDecimal);
+        context.fillText(
+          Math.round(i) / derivative,
+          origin.x + (i - startValue / precision) * divide,
+          heightDecimal
+        );
       }
       context.closePath();
     }
