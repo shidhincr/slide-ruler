@@ -13,8 +13,8 @@ class sliderRuler {
       lineWidth: 2,
       colorDecimal: '#E4E4E4',
       colorDigit: '#E4E4E4',
-      divide: 50,
-      precision: 1,
+      divide: 20,
+      precision: 0.5,
       fontSize: 20,
       fontColor: '#666',
       maxValue: 230,
@@ -227,17 +227,18 @@ class sliderRuler {
       context.moveTo(origin.x + (i - startValue / precision) * divide, 0);
       context.lineTo(
         origin.x + (i - startValue / precision) * divide,
-        (i/derivative) % 1 === 0 ? heightDecimal : heightDigit
+        (i / derivative) % 1 === 0 ? heightDecimal : heightDigit
       );
       context.lineWidth = lineWidth;
 
-      context.strokeStyle = (i/derivative) % 1 === 0 ? colorDecimal : colorDigit;
+      context.strokeStyle =
+        (i / derivative) % 1 === 0 ? colorDecimal : colorDigit;
       context.stroke();
 
       context.fillStyle = fontColor;
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      if ((i/derivative) % 1 === 0) {
+      if ((i / derivative) % 1 === 0) {
         context.font = `${fontSize}px Arial`;
         context.fillText(
           Math.round(i) / derivative,
