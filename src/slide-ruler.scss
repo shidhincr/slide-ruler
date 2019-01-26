@@ -10,12 +10,14 @@
     position: absolute;
     z-index: 1;
     left: 50%;
-    top: 0;
+    top: 9px;
     transform: translateX(-50%);
     content: '';
-    width: 3px;
-    height: 35px;
-    background-color: #00b0ab;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 7px 15.0px 7px;
+    border-color: transparent transparent #bf522d transparent;
   }
 }
 

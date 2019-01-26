@@ -8,11 +8,11 @@ class sliderRuler {
       canvasHeight: 83,
       boxColor: '#E4E4E4',
       scrollLeft: 0,
-      heightDecimal: 35,
-      heightDigit: 18,
-      lineWidth: 2,
-      colorDecimal: '#E4E4E4',
-      colorDigit: '#E4E4E4',
+      heightDecimal: 25,
+      heightDigit: 10,
+      lineWidth: 1.8,
+      colorDecimal: '#8E466E',
+      colorDigit: '#8E466E',
       divide: 20,
       precision: 0.5,
       fontSize: 15,
@@ -254,7 +254,7 @@ class sliderRuler {
 
     context.beginPath();
     context.moveTo(0, heightDecimal);
-    context.lineTo(999, heightDecimal);
+    context.lineTo(9999, heightDecimal);
     context.lineWidth = lineWidth;
     context.strokeStyle = colorDecimal;
     context.stroke();
