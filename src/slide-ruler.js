@@ -15,7 +15,7 @@ class sliderRuler {
       colorDigit: '#E4E4E4',
       divide: 20,
       precision: 0.5,
-      fontSize: 20,
+      fontSize: 15,
       fontColor: '#666',
       maxValue: 230,
       minValue: 100,
@@ -225,7 +225,10 @@ class sliderRuler {
       const isFullNumber = (i / derivative) % 1 === 0;
       context.beginPath();
 
-      context.moveTo(origin.x + (i - startValue / precision) * divide, isFullNumber ? 0 : heightDecimal);
+      context.moveTo(
+        origin.x + (i - startValue / precision) * divide,
+        isFullNumber ? 0 : heightDecimal
+      );
       context.lineTo(
         origin.x + (i - startValue / precision) * divide,
         isFullNumber ? heightDecimal : heightDigit
@@ -243,11 +246,19 @@ class sliderRuler {
         context.fillText(
           Math.round(i) / derivative,
           origin.x + (i - startValue / precision) * divide,
-          heightDecimal
+          heightDecimal + 10
         );
       }
       context.closePath();
     }
+
+    context.beginPath();
+    context.moveTo(0, heightDecimal);
+    context.lineTo(999, heightDecimal);
+    context.lineWidth = lineWidth;
+    context.strokeStyle = colorDecimal;
+    context.stroke();
+    context.closePath();
   }
 
   init(options) {
