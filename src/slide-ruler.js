@@ -222,23 +222,23 @@ class sliderRuler {
       i <= endValue / precision;
       i++
     ) {
+      const isFullNumber = (i / derivative) % 1 === 0;
       context.beginPath();
 
-      context.moveTo(origin.x + (i - startValue / precision) * divide, 0);
+      context.moveTo(origin.x + (i - startValue / precision) * divide, isFullNumber ? 0 : heightDecimal);
       context.lineTo(
         origin.x + (i - startValue / precision) * divide,
-        (i / derivative) % 1 === 0 ? heightDecimal : heightDigit
+        isFullNumber ? heightDecimal : heightDigit
       );
       context.lineWidth = lineWidth;
 
-      context.strokeStyle =
-        (i / derivative) % 1 === 0 ? colorDecimal : colorDigit;
+      context.strokeStyle = isFullNumber ? colorDecimal : colorDigit;
       context.stroke();
 
       context.fillStyle = fontColor;
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      if ((i / derivative) % 1 === 0) {
+      if (isFullNumber) {
         context.font = `${fontSize}px Arial`;
         context.fillText(
           Math.round(i) / derivative,
