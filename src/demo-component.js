@@ -40,12 +40,11 @@ class DemoComponent {
   }
 
   _renderRuler() {
-    const {maxValue, minValue, currentValue, precision = 1} = this.options;
+    const {values, currentValue, precision = 1} = this.options;
     new SlideRuler({
       el: this.options.container,
       handleValue: this.handleValue.bind(this),
-      maxValue: maxValue,
-      minValue: minValue,
+      values: values,
       currentValue: currentValue,
       precision: precision
     });

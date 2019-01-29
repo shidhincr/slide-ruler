@@ -13,10 +13,11 @@ class sliderRuler {
       lineWidth: 1.8,
       colorDecimal: '#8E466E',
       colorDigit: '#8E466E',
-      divide: 20,
-      precision: 0.5,
+      divide: 30,
+      precision: 1,
       fontSize: 15,
       fontColor: '#666',
+      values: [], // the values should be a sorted array
       maxValue: 230,
       minValue: 100,
       currentValue: 160
@@ -47,7 +48,7 @@ class sliderRuler {
   }
 
   _renderCanvas() {
-    const { canvasWidth, canvasHeight } = this.options,
+    const { canvasWidth, canvasHeight, currentValue, values } = this.options,
       canvas = this.canvas;
     canvas.width = canvasWidth * 2;
     canvas.height = canvasHeight * 2;
@@ -62,6 +63,13 @@ class sliderRuler {
       canvas.onmousedown = this.touchStart.bind(this);
       canvas.onmousemove = this.touchMove.bind(this);
       canvas.onmouseup = this.touchEnd.bind(this);
+    }
+
+    if (values) {
+      this.options.currentValue = values.indexOf(currentValue);
+      this.options.minValue = 0;
+      this.options.maxValue = values.length - 1;
+      this.options.precision = 1;
     }
     this.dreawCanvas();
   }
@@ -141,14 +149,14 @@ class sliderRuler {
   }
 
   moveDreaw(shift) {
-    const { divide, precision } = this.options;
+    const { divide } = this.options;
     let moveValue = Math.round(-shift / divide),
       _moveValue = Math.abs(moveValue),
       draw = () => {
         if (_moveValue < 1) {
           return;
         }
-        this.options.currentValue += Math.sign(moveValue) * precision;
+        this.options.currentValue += Math.sign(moveValue);
         this.dreawCanvas();
         window.requestAnimationFrame(draw);
         _moveValue--;
@@ -166,6 +174,7 @@ class sliderRuler {
       maxValue,
       minValue,
       currentValue,
+      values,
       handleValue,
       precision,
       divide,
@@ -187,7 +196,7 @@ class sliderRuler {
     currentValue =
       (Math.round((currentValue * 10) / precision) * precision) / 10;
     this.options.currentValue = currentValue;
-    handleValue && handleValue(currentValue);
+    handleValue && handleValue(values[currentValue]);
     let diffCurrentMin = ((currentValue - minValue) * divide) / precision,
       startValue =
         currentValue - Math.floor(canvasWidth / 2 / divide) * precision;
@@ -216,13 +225,8 @@ class sliderRuler {
     fontSize = fontSize * 2;
     divide = divide * 2;
     const derivative = 1 / precision;
-
-    for (
-      let i = Math.round((startValue / precision) * 10) / 10;
-      i <= endValue / precision;
-      i++
-    ) {
-      const isFullNumber = (i / derivative) % 1 === 0;
+    for (let i = startValue; i <= endValue; i++) {
+      const isFullNumber = i % 2 === 0;
       context.beginPath();
 
       context.moveTo(
@@ -241,10 +245,10 @@ class sliderRuler {
       context.fillStyle = fontColor;
       context.textAlign = 'center';
       context.textBaseline = 'top';
-      if (isFullNumber) {
+      if (true) {
         context.font = `${fontSize}px Arial`;
         context.fillText(
-          Math.round(i) / derivative,
+          values[Math.round(i) / derivative],
           origin.x + (i - startValue / precision) * divide,
           heightDecimal + 10
         );
